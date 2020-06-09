@@ -43,7 +43,7 @@ class StoreLocator(object):
         return 'I locate stores and nothing else'
 
     @staticmethod
-    def nearby_stores(address, service='Delivery'):
+    def nearby_stores(address, service):
         """Query the API to find nearby stores.
 
         nearby_stores will filter the information we receive from the API
@@ -51,11 +51,12 @@ class StoreLocator(object):
         and stores that are not currently in service (!['ServiceIsOpen']).
         """
         data = request_json(address.urls.find_url(), line1=address.line1, line2=address.line2, type=service)
+        
         return [Store(x, address.country) for x in data['Stores']
                 if x['IsOnlineNow'] and x['ServiceIsOpen'][service]]
 
     @staticmethod
-    def find_closest_store_to_customer(customer, service='Delivery'):
+    def find_closest_store_to_customer(customer, service):
         stores = StoreLocator.nearby_stores(customer.address, service=service)
         if not stores:
             raise Exception('No local stores are currently open')
